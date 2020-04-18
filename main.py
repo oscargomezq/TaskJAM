@@ -1,7 +1,7 @@
 # Testing
 
 # import pandas as pd
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 # import pickle
 
 # load model
@@ -11,8 +11,13 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 # routes
-@app.route('/', methods=['POST'])
+@app.route('/')
 def index():
+	return render_template('index.html')
+
+
+@app.route('/testpost', methods=['POST'])
+def postreq():
 	if request.method == "POST":
 		ret_dict = {"value": "YAY worked"}
 		return jsonify(**ret_dict)
@@ -20,7 +25,6 @@ def index():
 
 	# posts = get_posts()
 	# print("POST REQ")
-
 
 
 # def predict():
