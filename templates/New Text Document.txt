@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>TaskJAM</h1>
+<p>Index site</p>
+
+</body>
+</html>
