@@ -17,15 +17,13 @@ def index():
 
 @app.route('/register', methods=['POST'])
 def register_user():
+
 	if request.method == "POST":
 
 		user_info = request.json
-		print (user_info)
-		print(type(user_info))
-
-		ret_dict = {"value": "YAY worked"}
+		status = add_user(db.users, user_info)
+		ret_dict = {"status": status}
 		return jsonify(**ret_dict)
-
 
 
 
