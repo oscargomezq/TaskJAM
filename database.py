@@ -55,7 +55,7 @@ def random_date_of_birth():
     )
 
 # Create csv with mock user data
-def populate_user_collection (n_users = 10000):
+def populate_user_collection (collection, n_users = 100000):
 
 	# https://github.com/smashew/NameDatabases/tree/master/NamesDatabases/
 	# https://www.kaggle.com/muhadel/hobbies/version/3
@@ -86,10 +86,13 @@ def populate_user_collection (n_users = 10000):
 
 		users.append(new_user)
 
-	users_df = pd.DataFrame(users)
+		if (i%10000)==1 or i==n_users-1:
+			collection.insert_many(users)
+			users = []
 
-	print(users_df.head())
-	users_df.to_csv('names/taskjam_users.csv', index=False)
+	# users_df = pd.DataFrame(users)
+	# print(users_df.head())
+	# users_df.to_csv('names/taskjam_users.csv', index=False)
 
 	with open('names/taskjam_users.json', 'w') as f:
 		json.dump(users, f, default=str)
@@ -121,4 +124,6 @@ if __name__ == '__main__':
 	client = pymongo.MongoClient("mongodb+srv://oscargomezq:oscargomezq@cluster-taskjam-ahyms.mongodb.net/test?retryWrites=true&w=majority")
 	db = client["taskjam-db"]
 
-	populate_db_users(db.users)
+	# populate_db_users(db.users_big)
+
+	populate_user_collection(db.users_big)
