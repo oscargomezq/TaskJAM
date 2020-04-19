@@ -15,15 +15,15 @@ def index():
 	return render_template('index.html')
 
 @app.route('/register', methods=['POST'])
-def register_user():
+def handle_user():
 
 	if request.method == "POST":
 		user_info = request.json
 		ret_dict = add_user(db.users, user_info)
 		return jsonify(**ret_dict)
 
-@app.route('/add_task', methods=['POST'])
-def add_task():
+@app.route('/task', methods=['POST'])
+def handle_task():
 
 	if request.method == "POST":
 		task_info = request.json
@@ -31,12 +31,11 @@ def add_task():
 		return jsonify(**ret_dict)
 
 @app.route('/match', methods=['POST'])
-def make_match():
+def handle_match():
 
 	if request.method == "POST":
-		user_info = request.json
-		status = make_match(db.users, user_info)
-		ret_dict = {"status": status}
+		match_info = request.json
+		ret_dict = make_match(db.tasks, match_info)
 		return jsonify(**ret_dict)
 
 if __name__ == '__main__':

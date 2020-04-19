@@ -17,10 +17,11 @@ def add_user (collection, user):
 		# Insert to db
 		collection.insert_one(user)
 	except:
-		ret_dict['msg'] "Error registering user"
+		ret_dict['msg'] = "Error registering user"
 		ret_dict['status_code'] = 400
+	return ret_dict
 
-# user is a python dict
+# task is a python dict
 def add_task (collection, task):
 	
 	# Parse user json info
@@ -31,9 +32,27 @@ def add_task (collection, task):
 		# Insert to db
 		collection.insert_one(task)
 	except:
-		ret_dict['msg'] "Error adding task"
+		ret_dict['msg'] = "Error adding task"
+		ret_dict['status_code'] = 400
+	return ret_dict
+
+def make_match(collection, match):
+	
+	ret_dict = {}
+	try:
+		ret_dict['msg'] =  "Succesfully matched task " + match['description'] + " for user " + match['username']
+		ret_dict['status_code'] = 200
+	except:
+		ret_dict['msg'] = "Error matching user"
 		ret_dict['status_code'] = 400
 
+	username = match['username']
+	# Find match
+	match_username = 'john_doe_123'
+		
+	ret_dict['matched_with'] = match_username
+
+	return ret_dict
 
 def init_datasets():
 	
@@ -110,9 +129,8 @@ def populate_user_collection (collection, n_users = 100000):
 	# print(users_df.head())
 	# users_df.to_csv('names/taskjam_users.csv', index=False)
 
-	with open('names/taskjam_users.json', 'w') as f:
-		json.dump(users, f, default=str)
-
+	# with open('names/taskjam_users.json', 'w') as f:
+	# 	json.dump(users, f, default=str)
 
 def populate_db_users (collection):
 
@@ -133,13 +151,14 @@ def populate_db_users (collection):
 
 if __name__ == '__main__':
 
-	# populate_user_collection()
 
-	import pymongo
+	# import pymongo
 
-	client = pymongo.MongoClient("mongodb+srv://oscargomezq:oscargomezq@cluster-taskjam-ahyms.mongodb.net/test?retryWrites=true&w=majority")
-	db = client["taskjam-db"]
+	# client = pymongo.MongoClient("mongodb+srv://oscargomezq:oscargomezq@cluster-taskjam-ahyms.mongodb.net/test?retryWrites=true&w=majority")
+	# db = client["taskjam-db"]
 
 	# populate_db_users(db.users_big)
 
-	populate_user_collection(db.users_big)
+	# populate_user_collection(db.users_big)
+
+	pass
