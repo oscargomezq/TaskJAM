@@ -3,7 +3,8 @@ import random
 from datetime import datetime 
 from datetime import timedelta
 import pandas as pd
-
+import json
+from bson import json_util
 
 # user is a python dict
 def add_user (collection, user):
@@ -17,7 +18,6 @@ def add_user (collection, user):
 		return "Succesfully registered user " + user['first_name'] + " " + user['last_name']
 	except:
 		return "Error registering user"
-
 
 def init_datasets():
 	
@@ -44,7 +44,6 @@ def generate_username(first_name, last_name, usernames):
 		n += 1
 		username = first_name.lower() + "_" + last_name.lower() + "_" + str(n)
 	return username
-
 
 def random_date_of_birth():
     """Generate a random datetime between `start` and `end`"""
@@ -92,7 +91,34 @@ def populate_user_collection (n_users = 10000):
 	print(users_df.head())
 	users_df.to_csv('names/taskjam_users.csv', index=False)
 
+	with open('names/taskjam_users.json', 'w') as f:
+		json.dump(users, f, default=str)
+
+
+def populate_db_users (collection):
+
+	# users_df = pd.read_csv('names/taskjam_users.csv')	
+	# users_df['json'] = users_df.apply(lambda x: x.to_json(), axis=1)
+	# json_users = [json.loads(x) for x in users_df['json'].tolist()]
+	# print((json_users[0]))
+
+	with open('names/taskjam_users.json', 'r') as f:
+		s = f.read()
+		json_users = json.loads(s)
+	for user in json_users:
+		user['date_of_birth'] = datetime.strptime(user['date_of_birth'], '%Y-%m-%d %H:%M:%S')
+		user['_id'] = user['username']
+	# print(json_users[:2])
+	collection.insert_many(json_users)
+
 
 if __name__ == '__main__':
 
-	populate_user_collection()
+	# populate_user_collection()
+
+	import pymongo
+
+	client = pymongo.MongoClient("mongodb+srv://oscargomezq:oscargomezq@cluster-taskjam-ahyms.mongodb.net/test?retryWrites=true&w=majority")
+	db = client["taskjam-db"]
+
+	populate_db_users(db.users)
