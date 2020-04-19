@@ -1,48 +1,42 @@
-# Testing
-
 # import pandas as pd
 from flask import Flask, jsonify, request, render_template
-# import pickle
+import pymongo
+from database import add_user, add_task, make_match
 
-# load model
-# model = pickle.load(open('model.pkl','rb'))
+# Connect to mongoDB Atlas
+client = pymongo.MongoClient("mongodb+srv://oscargomezq:oscargomezq@cluster-taskjam-ahyms.mongodb.net/test?retryWrites=true&w=majority")
+db = client["taskjam-db"]
 
-# app
+
 app = Flask(__name__)
 
-# routes
 @app.route('/')
 def index():
 	return render_template('index.html')
 
+@app.route('/register', methods=['POST'])
+def handle_user():
 
-@app.route('/testpost', methods=['POST'])
-def postreq():
 	if request.method == "POST":
-		ret_dict = {"value": "YAY worked"}
+		user_info = request.json
+		ret_dict = add_user(db.users, user_info)
 		return jsonify(**ret_dict)
-	# 	create_post(name,post)
 
-	# posts = get_posts()
-	# print("POST REQ")
+@app.route('/task', methods=['POST'])
+def handle_task():
 
+	if request.method == "POST":
+		task_info = request.json
+		ret_dict = add_task(db.tasks, task_info)
+		return jsonify(**ret_dict)
 
-# def predict():
-#     # get data
-#     data = request.get_json(force=True)
+@app.route('/match', methods=['POST'])
+def handle_match():
 
-#     # convert data into dataframe
-#     data.update((x, [y]) for x, y in data.items())
-#     data_df = pd.DataFrame.from_dict(data)
-
-#     # predictions
-#     result = model.predict(data_df)
-
-#     # send back to browser
-#     output = {'results': int(result[0])}
-
-#     # return data
-#     return jsonify(results=output)
+	if request.method == "POST":
+		match_info = request.json
+		ret_dict = make_match(db.tasks, match_info)
+		return jsonify(**ret_dict)
 
 if __name__ == '__main__':
     app.run(port = 5000, debug=True)
