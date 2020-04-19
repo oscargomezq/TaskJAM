@@ -1,11 +1,10 @@
-# Testing
-
 # import pandas as pd
 from flask import Flask, jsonify, request, render_template
-# import pickle
 
-# load model
-# model = pickle.load(open('model.pkl','rb'))
+# Connect to mongoDB Atlas
+client = pymongo.MongoClient("mongodb+srv://oscargomezq:oscargomezq@cluster-taskjam-ahyms.mongodb.net/test?retryWrites=true&w=majority")
+db = client["taskjam-db"]
+
 
 # app
 app = Flask(__name__)
