@@ -1,4 +1,9 @@
 import pymongo
+import random
+from datetime import datetime 
+from datetime import timedelta
+import pandas as pd
+
 
 # user is a python dict
 def add_user (collection, user):
@@ -12,3 +17,82 @@ def add_user (collection, user):
 		return "Succesfully registered user " + user['first_name'] + " " + user['last_name']
 	except:
 		return "Error registering user"
+
+
+def init_datasets():
+	
+	first_df = pd.read_csv('names/first_names.csv', header=None)
+	print(first_df.head())
+	first_names = first_df.iloc[:,0].tolist()
+	first_names = [x.strip().split(" ")[0] for x in first_names]
+
+	last_df = pd.read_csv('names/last_names.csv', header=None, usecols=[0])
+	print(last_df.head())
+	last_names = last_df.iloc[:,0].tolist()
+	last_names = [x.strip().split(" ")[0] for x in last_names]
+
+	hobbies_df = pd.read_csv('names/hobbies.csv')
+	print(hobbies_df.head())
+	interests = hobbies_df.iloc[:,0].tolist()
+
+	return first_names, last_names, interests
+
+def generate_username(first_name, last_name, usernames):
+	n = 0
+	username = first_name.lower() + "_" + last_name.lower() + "_" + str(n)
+	while (username in usernames):
+		n += 1
+		username = first_name.lower() + "_" + last_name.lower() + "_" + str(n)
+	return username
+
+
+def random_date_of_birth():
+    """Generate a random datetime between `start` and `end`"""
+    start = datetime.strptime('1/1/1960 1:30 PM', '%m/%d/%Y %I:%M %p')
+    end = datetime.strptime('1/1/2006 1:30 PM', '%m/%d/%Y %I:%M %p') 
+    return start + timedelta(
+        # Get a random amount of seconds between `start` and `end`
+        seconds=random.randint(0, int((end - start).total_seconds())),
+    )
+
+# Create csv with mock user data
+def populate_user_collection (n_users = 10000):
+
+	# https://github.com/smashew/NameDatabases/tree/master/NamesDatabases/
+	# https://www.kaggle.com/muhadel/hobbies/version/3
+	# Generate names dicts from the datasets above
+
+	first_names, last_names, interests = init_datasets()
+	usernames = set({})
+	mail_hosts = ["hotmail", "gmail", "outlook", "yahoo"]
+	languages = ["English", "Arabic", "Spanish"]
+
+	# Final list of users with details, each user a dict
+	users = []
+
+	for i in range(n_users):
+
+		new_user = {}
+
+		new_user['first_name']  = random.choice(first_names)
+		new_user['last_name'] = random.choice(last_names)
+
+		new_user['username'] = generate_username(new_user['first_name'], new_user['last_name'], usernames)
+		new_user['email'] = new_user['username'] + "@" + random.choice(mail_hosts) + ".com"
+
+		new_user['languages'] = random.sample(languages, k = random.choice(range(len(languages))) + 1 )
+		new_user['interests'] = random.sample(interests, k = random.choice(range(10)) + 1 )
+
+		new_user['date_of_birth'] = random_date_of_birth()
+
+		users.append(new_user)
+
+	users_df = pd.DataFrame(users)
+
+	print(users_df.head())
+	users_df.to_csv('names/taskjam_users.csv', index=False)
+
+
+if __name__ == '__main__':
+
+	populate_user_collection()
