@@ -2,7 +2,7 @@ import pymongo
 import random
 from datetime import datetime 
 from datetime import timedelta
-import pandas as pd
+# import pandas as pd
 import json
 from bson import json_util
 
