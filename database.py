@@ -10,14 +10,30 @@ from bson import json_util
 def add_user (collection, user):
 	
 	# Parse user json info
-
-	# Insert to db
-	collection.insert_one(user)
-
+	ret_dict = {}
 	try:
-		return "Succesfully registered user " + user['first_name'] + " " + user['last_name']
+		ret_dict['msg'] =  "Succesfully registered user " + user['first_name'] + " " + user['last_name']
+		ret_dict['status_code'] = 200
+		# Insert to db
+		collection.insert_one(user)
 	except:
-		return "Error registering user"
+		ret_dict['msg'] "Error registering user"
+		ret_dict['status_code'] = 400
+
+# user is a python dict
+def add_task (collection, task):
+	
+	# Parse user json info
+	ret_dict = {}
+	try:
+		ret_dict['msg'] =  "Succesfully registered task " + task['description'] + " for user " + task['username']
+		ret_dict['status_code'] = 200
+		# Insert to db
+		collection.insert_one(task)
+	except:
+		ret_dict['msg'] "Error adding task"
+		ret_dict['status_code'] = 400
+
 
 def init_datasets():
 	
